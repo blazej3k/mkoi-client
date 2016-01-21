@@ -79,7 +79,7 @@ public class Cipher {
 		B = B + S[0];
 		D = D + S[1];
 		
-		for(int i=1; i<rounds; i++) {
+		for(int i=1; i<=rounds; i++) {
 			t = B*(2*B + 1);
 			t = rotL(t, logW);
 			
@@ -117,9 +117,12 @@ public class Cipher {
 		C = C - S[2*rounds+3];
 		A = A - S[2*rounds+2];
 		
-		for (int i=rounds; i==1; i--) {
-			x=C;
-			A=D; B=A; C=B; D=x;
+		for (int i=rounds; i>=1; i--) { 
+			x=D; 
+			D = C; 
+			C = B; 
+			B = A; 
+			A = x;
 			
 			u = D*(2*D+1);
 			u = rotL(u, logW);
@@ -161,7 +164,7 @@ public class Cipher {
 		// the last byte of plaintext or ciphertext is placed into the most signicant byte of D  
 		
 		for (int i=0; i<temp.length; i++) {
-			temp[i] = wejscie[offset++] & 0xFF | wejscie[offset++] & 0xFF << 8 | wejscie[offset++] & 0xFF << 16 | wejscie[offset++] & 0xFF << 24;  
+			temp[i] = (wejscie[offset++] & 0xFF) | ((wejscie[offset++] & 0xFF) << 8) | ((wejscie[offset++] & 0xFF) << 16) | ((wejscie[offset++] & 0xFF) << 24);
 			// to mam teraz wypełnioną jedną linijkę intów, czyli styknie na 1 rejestr, 4 bajtowy, np. A
 			// w kolejnym obrocie będzie B, w ostatnim 'last byte of plaintext' trafi do pierwszego bajtu D = dobrze
 			// przez przesunięcia i użycie inta bufory będą równe, nie trzeba ich specjalnie pilnować i dopełniać
