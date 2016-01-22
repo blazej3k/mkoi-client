@@ -81,6 +81,7 @@ public class Cipher {
 		else
 			nowePlain = plain;
 		
+		System.out.println("Encrypt: nowePlain lenght: "+nowePlain.length);
 		InicjujBufory(nowePlain);
 		
 		B = B + S[0];

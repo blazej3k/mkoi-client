@@ -16,7 +16,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Scanner;
+
+import javax.xml.bind.DatatypeConverter;
 
 import blake.mkoi.localclient.crypto.Cipher;
 import blake.mkoi.localclient.crypto.Protokol;
@@ -63,7 +67,7 @@ public class Client {
 			String message = "";
 
 			while(piszemy) {
-				message = odczyt.nextLine();
+				message = odczyt.nextLine(); //wczytanie linii z klawiatury
 				send(message);
 				
 				if (message == "bye") {
@@ -94,14 +98,26 @@ public class Client {
     }
    
     void send(String command) {
-    	byte[] encrypted = cipher.Encrypt(command.getBytes(charset));
-    	try {
-			dos.write(encrypted);
-			dos.flush();
-		} catch (IOException e) {
-			System.out.println("Błąd wysyłania tablicy bajtów.");
-			e.printStackTrace();
-		}
+    	byte[] bajtCommand = command.getBytes(charset);
+    	
+    	byte[] blok = new byte[16];
+    	byte[] encrypted=null;
+    	
+    	for (int i=0; i<=bajtCommand.length/16; i++)
+    	{
+    		blok = Arrays.copyOfRange(bajtCommand, i*16, (i+1)*16);
+    		encrypted = cipher.Encrypt(blok);
+    		
+        	try {
+    			dos.write(encrypted);
+    			dos.flush();
+    		} catch (IOException e) {
+    			System.out.println("Błąd wysyłania tablicy bajtów.");
+    			e.printStackTrace();
+    		}
+    	}
+    	
+
     }
 	
 	private void sendMessage(String message) {
