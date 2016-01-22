@@ -46,7 +46,7 @@ public class Client {
 		this.serverPort = serverPort;
 		this.klucz = klucz;
 		Boolean connected = false;
-		
+
 		try {
 			connect();
 			connected=true;
@@ -68,7 +68,7 @@ public class Client {
 
 			while(piszemy) {
 				message = odczyt.nextLine(); //wczytanie linii z klawiatury
-				send(message);
+				send(message.getBytes(charset));
 				
 				if (message == "bye") {
 					piszemy=false;
@@ -97,27 +97,52 @@ public class Client {
         return Protokol.ERROR;
     }
    
-    void send(String command) {
-    	byte[] bajtCommand = command.getBytes(charset);
-    	
+    void send(byte[] wejscie) {
     	byte[] blok = new byte[16];
-    	byte[] encrypted=null;
+    	byte[] encryptedBlok = new byte[16];
+    	byte[] encryptedTotal = new byte[wejscie.length + (16 - wejscie.length%16)];
+    	Arrays.fill(encryptedTotal, (byte) 0);
+    	byte[] wejsciePad = new byte[encryptedTotal.length];
+    	wejsciePad = Arrays.copyOf(wejscie, wejsciePad.length);
     	
-    	for (int i=0; i<=bajtCommand.length/16; i++)
-    	{
-    		blok = Arrays.copyOfRange(bajtCommand, i*16, (i+1)*16);
-    		encrypted = cipher.Encrypt(blok);
+    	System.out.println("wejscie: "+wejscie.length+" "+new String(wejscie, charset));
+    	System.out.println("encryptedTotal.length: "+encryptedTotal.length);
+    	System.out.println("wejsciePad: "+wejsciePad.length+" "+new String(wejsciePad, charset));
+    	
+    	for (int i=0; i<wejsciePad.length; i+=16) {
+    		System.arraycopy(wejsciePad, i, blok, 0, blok.length);
+    		System.out.println(new String(blok, charset));
     		
-        	try {
-    			dos.write(encrypted);
-    			dos.flush();
-    		} catch (IOException e) {
-    			System.out.println("Błąd wysyłania tablicy bajtów.");
-    			e.printStackTrace();
-    		}
+    		encryptedBlok = cipher.Encrypt(blok);
+    		System.arraycopy(encryptedBlok, 0, encryptedTotal, i, encryptedBlok.length);
     	}
     	
-
+    	
+    	try {
+			dos.write(encryptedTotal);
+			dos.flush();
+		} catch (IOException e) {
+			System.out.println("Błąd wysyłania tablicy bajtów.");
+			e.printStackTrace();
+		}
+    	
+//    	for (int i=0; i<=(dlugoscWe/16); i++)
+//    	{
+//    		blok = Arrays.copyOfRange(wejscie, i*16, (i+1)*16);
+//    		encryptedBlok = cipher.Encrypt(blok); 
+//    		System.arraycopy(encryptedBlok, 0, encryptedTotal, i*16, 16);
+//    		
+//    		System.out.println("Wejscie: "+wejscie.length+" Encrypted: "+encryptedBlok.length);
+//    		System.out.println("decryptedblok: "+new String(cipher.Decrypt(encryptedBlok), charset)+" dlugosc: "+cipher.Decrypt(encryptedBlok).length);
+//    		
+//        	try {
+//    			dos.write(encryptedTotal);
+//    			dos.flush();
+//    		} catch (IOException e) {
+//    			System.out.println("Błąd wysyłania tablicy bajtów.");
+//    			e.printStackTrace();
+//    		}
+//    	}
     }
 	
 	private void sendMessage(String message) {

@@ -61,28 +61,26 @@ public class Cipher {
 			i = (i+1) % 44;
 			j = (j+1) % c;
 		}
-		
 	}
 	
+	//funkcja przyjmuje NA PEWNO 16 BAJTOWE próbki, tu nie odbywa się padding!
 	public byte[] Encrypt(byte[] plain) {
 		int t=0, u=0, x=0;
-		byte[] nowePlain;
+//		byte[] nowePlain;
 		
 		String test = new String(plain, charset);
-		
 		System.out.println("Szyfruje se teksta: "+test);
 		byte[] bajtBufor = test.getBytes(charset);
 		System.out.println("Jego długość bajtowa: "+bajtBufor.length+ ", znakowa: "+test.length());
 		System.out.println();
 		
-		if (plain.length<16){
-			nowePlain = dodajPadding(plain);
-		}
-		else
-			nowePlain = plain;
-		
-		System.out.println("Encrypt: nowePlain lenght: "+nowePlain.length);
-		InicjujBufory(nowePlain);
+//		if (plain.length<16){
+//			nowePlain = dodajPadding(plain);
+//		}
+//		else
+//			nowePlain = plain;		
+////		System.out.println("Encrypt: nowePlain lenght: "+nowePlain.length);
+		InicjujBufory(plain);
 		
 		B = B + S[0];
 		D = D + S[1];
@@ -107,8 +105,8 @@ public class Cipher {
 		
 		
 		//uporządkowanie wyników, zebranie ich z buforów i skonstruowanie tablicy bajtów wyjściowych (zakodowanych)
-		int[] intWynik = new int[nowePlain.length/4];
-		byte[] byteWynik = new byte[nowePlain.length];
+		int[] intWynik = new int[plain.length/4];
+		byte[] byteWynik = new byte[plain.length];
 		intWynik[0] = A;intWynik[1] = B;intWynik[2] = C;intWynik[3] = D;
 
 		for(int i = 0;i<byteWynik.length;i++){
@@ -185,16 +183,6 @@ public class Cipher {
 		D = temp[3];
 	}
 	
-	// musi doprowadzić do rozmiaru 16
-	private byte[] dodajPadding(byte[] wejscie) {
-		int pad_size = 16 - wejscie.length;
-		
-		byte[] noweWej = new byte[16];
-	    System.arraycopy(wejscie, 0, noweWej, pad_size, wejscie.length);
-	    System.out.println("nowewej dlugosc: "+noweWej.length);
-	    return noweWej;
-	}
-	
 	private int rotL(int dane, int n) {
 		//32 to size inta
 		// mozna by w sumie przesuwac w prawo >>, ze znakiem, bez znaczenia bo i tak to co 'wciagam' z powrotem jest robione ta druga operacja
@@ -208,3 +196,13 @@ public class Cipher {
 		return wynik;
 	}
 }
+
+//// musi doprowadzić do rozmiaru 16
+//private byte[] dodajPadding(byte[] wejscie) {
+//	int pad_size = 16 - wejscie.length;
+//	
+//	byte[] noweWej = new byte[16];
+//    System.arraycopy(wejscie, 0, noweWej, pad_size, wejscie.length);
+//    System.out.println("nowewej dlugosc: "+noweWej.length);
+//    return noweWej;
+//}
