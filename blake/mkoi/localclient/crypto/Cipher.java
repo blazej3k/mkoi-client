@@ -66,6 +66,7 @@ public class Cipher {
 	
 	public byte[] Encrypt(byte[] plain) {
 		int t=0, u=0, x=0;
+		byte[] nowePlain;
 		
 		String test = new String(plain, charset);
 		
@@ -74,7 +75,13 @@ public class Cipher {
 		System.out.println("Jego długość bajtowa: "+bajtBufor.length+ ", znakowa: "+test.length());
 		System.out.println();
 		
-		InicjujBufory(plain);
+		if (plain.length<16){
+			nowePlain = dodajPadding(plain);
+		}
+		else
+			nowePlain = plain;
+		
+		InicjujBufory(nowePlain);
 		
 		B = B + S[0];
 		D = D + S[1];
@@ -99,8 +106,8 @@ public class Cipher {
 		
 		
 		//uporządkowanie wyników, zebranie ich z buforów i skonstruowanie tablicy bajtów wyjściowych (zakodowanych)
-		int[] intWynik = new int[plain.length/4];
-		byte[] byteWynik = new byte[plain.length];
+		int[] intWynik = new int[nowePlain.length/4];
+		byte[] byteWynik = new byte[nowePlain.length];
 		intWynik[0] = A;intWynik[1] = B;intWynik[2] = C;intWynik[3] = D;
 
 		for(int i = 0;i<byteWynik.length;i++){
@@ -153,8 +160,10 @@ public class Cipher {
 	
 	private void InicjujBufory(byte[] wejscie) {
 		int offset=0;
-		int[] temp = new int[wejscie.length/4];
-		
+		int[] temp;
+
+		temp = new int[wejscie.length/4];
+
 		for (int i=0; i<temp.length; i++) {
 			temp[i]=0;
 		}
@@ -175,6 +184,15 @@ public class Cipher {
 		D = temp[3];
 	}
 	
+	// musi doprowadzić do rozmiaru 16
+	private byte[] dodajPadding(byte[] wejscie) {
+		int pad_size = 16 - wejscie.length;
+		
+		byte[] noweWej = new byte[16];
+	    System.arraycopy(wejscie, 0, noweWej, pad_size, wejscie.length);
+	    System.out.println("nowewej dlugosc: "+noweWej.length);
+	    return noweWej;
+	}
 	
 	private int rotL(int dane, int n) {
 		//32 to size inta
