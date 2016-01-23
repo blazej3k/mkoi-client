@@ -7,8 +7,6 @@ public class Cipher {
 	
 	public static Charset charset = StandardCharsets.UTF_8;
 	
-	private String text = "";
-	
 	private int w 			= 32; // bits - 4 B
 	private int wordB		= 4;
 	private int rounds 		= 20;
@@ -66,20 +64,11 @@ public class Cipher {
 	//funkcja przyjmuje NA PEWNO 16 BAJTOWE próbki, tu nie odbywa się padding!
 	public byte[] Encrypt(byte[] plain) {
 		int t=0, u=0, x=0;
-//		byte[] nowePlain;
 		
-		String test = new String(plain, charset);
-		System.out.println("Szyfruje se teksta: "+test);
-		byte[] bajtBufor = test.getBytes(charset);
-		System.out.println("Jego długość bajtowa: "+bajtBufor.length+ ", znakowa: "+test.length());
+		System.out.println("Szyfruje napis: "+new String(plain, charset));
+//		System.out.println("Jego długość bajtowa: "+plain.length+ ", znakowa: "+(new String(plain, charset).length()));
 		System.out.println();
 		
-//		if (plain.length<16){
-//			nowePlain = dodajPadding(plain);
-//		}
-//		else
-//			nowePlain = plain;		
-////		System.out.println("Encrypt: nowePlain lenght: "+nowePlain.length);
 		InicjujBufory(plain);
 		
 		B = B + S[0];
@@ -116,6 +105,7 @@ public class Cipher {
 	     return byteWynik;
 	}
 	
+	//funkcja przyjmuje NA PEWNO 16 BAJTOWE próbki, tu nie odbywa się padding!
 	public byte[] Decrypt(byte[] encrypted) {
 		int t=0, u=0, x=0;
 		InicjujBufory(encrypted);
